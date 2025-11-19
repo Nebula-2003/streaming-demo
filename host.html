@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveKit Host - Start Broadcasting</title>
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        button.stop {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        #status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        #status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+            display: block;
+        }
+
+        #status.success {
+            background: #e8f5e9;
+            color: #388e3c;
+            display: block;
+        }
+
+        #status.error {
+            background: #ffebee;
+            color: #d32f2f;
+            display: block;
+        }
+
+        #videoContainer {
+            display: none;
+            margin-top: 30px;
+        }
+
+        #localVideo {
+            width: 100%;
+            border-radius: 12px;
+            background: #000;
+            display: block;
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .stats.show {
+            display: block;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .stats-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .stats-value {
+            color: #333;
+        }
+
+        .room-info {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .room-info.show {
+            display: block;
+        }
+
+        .room-info h3 {
+            margin-bottom: 10px;
+            color: #e65100;
+            font-size: 16px;
+        }
+
+        .room-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .share-link {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 13px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎥 Start Broadcasting</h1>
+        <p class="subtitle">Host your live video stream</p>
+
+        <div id="status"></div>
+
+        <div id="setupForm">
+            <div class="form-group">
+                <label for="roomName">Room Name</label>
+                <input type="text" id="roomName" placeholder="my-live-stream" value="my-live-stream" required>
+            </div>
+
+            <div class="form-group">
+                <label for="hostName">Your Name</label>
+                <input type="text" id="hostName" placeholder="Host Name" value="Host" required>
+            </div>
+
+            <button id="startBtn" onclick="startBroadcast()">Start Broadcasting</button>
+        </div>
+
+        <div class="room-info" id="roomInfo">
+            <h3>📢 Your Stream is Live!</h3>
+            <p><strong>Room:</strong> <span id="currentRoom"></span></p>
+            <p><strong>Viewers:</strong> <span id="viewerCount">0</span></p>
+            <p>Share this link with viewers:</p>
+            <div class="share-link" id="shareLink"></div>
+        </div>
+
+        <div id="videoContainer">
+            <video id="localVideo" autoplay muted playsinline></video>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stats-item">
+                <span class="stats-label">Status:</span>
+                <span class="stats-value" id="connectionStatus">Connecting...</span>
+            </div>
+            <div class="stats-item">
+                <span class="stats-label">Video Published:</span>
+                <span class="stats-value" id="videoStatus">No</span>
+            </div>
+            <div class="stats-item">
+                <span class="stats-label">Audio Published:</span>
+                <span class="stats-value" id="audioStatus">No</span>
+            </div>
+        </div>
+
+        <button id="stopBtn" class="stop" onclick="stopBroadcast()" style="display: none;">Stop Broadcasting</button>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let room = null;
+        let localTracks = [];
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = type;
+        }
+
+        async function startBroadcast() {
+            const roomName = document.getElementById('roomName').value.trim();
+            const hostName = document.getElementById('hostName').value.trim();
+
+            if (!roomName || !hostName) {
+                showStatus('Please enter both room name and your name', 'error');
+                return;
+            }
+
+            try {
+                document.getElementById('startBtn').disabled = true;
+                showStatus('Getting access token...', 'info');
+
+                // Get token from backend
+                const response = await fetch(`${API_URL}/api/token/host`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ roomName, participantName: hostName })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get token');
+                }
+
+                const data = await response.json();
+                showStatus('Connecting to LiveKit...', 'info');
+
+                // Create room instance
+                room = new LivekitClient.Room({
+                    adaptiveStream: true,
+                    dynacast: true,
+                });
+
+                // Set up event listeners
+                room.on(LivekitClient.RoomEvent.Connected, () => {
+                    showStatus('Connected! Starting camera...', 'success');
+                    document.getElementById('connectionStatus').textContent = 'Connected';
+                });
+
+                room.on(LivekitClient.RoomEvent.ParticipantConnected, (participant) => {
+                    console.log('Viewer joined:', participant.identity);
+                    updateViewerCount();
+                });
+
+                room.on(LivekitClient.RoomEvent.ParticipantDisconnected, () => {
+                    updateViewerCount();
+                });
+
+                room.on(LivekitClient.RoomEvent.Disconnected, () => {
+                    showStatus('Disconnected from room', 'error');
+                    resetUI();
+                });
+
+                room.on(LivekitClient.RoomEvent.LocalTrackPublished, (publication) => {
+                    console.log('Track published:', publication.kind);
+                    if (publication.kind === 'video') {
+                        document.getElementById('videoStatus').textContent = 'Yes';
+                        // Attach video when it's published
+                        if (publication.track) {
+                            const videoElement = document.getElementById('localVideo');
+                            publication.track.attach(videoElement);
+                        }
+                    } else if (publication.kind === 'audio') {
+                        document.getElementById('audioStatus').textContent = 'Yes';
+                    }
+                });
+
+                // Connect to room
+                await room.connect(data.livekitUrl, data.token);
+
+                // Enable camera and microphone
+                await room.localParticipant.setCameraEnabled(true);
+                await room.localParticipant.setMicrophoneEnabled(true);
+
+                // Video will be attached via LocalTrackPublished event
+
+                // Update UI
+                document.getElementById('setupForm').style.display = 'none';
+                document.getElementById('videoContainer').style.display = 'block';
+                document.getElementById('stopBtn').style.display = 'block';
+                document.getElementById('stats').classList.add('show');
+                document.getElementById('roomInfo').classList.add('show');
+                document.getElementById('currentRoom').textContent = roomName;
+
+                const viewerUrl = `${window.location.origin}/viewer.html?room=${encodeURIComponent(roomName)}`;
+                document.getElementById('shareLink').textContent = viewerUrl;
+
+                showStatus('Broadcasting live! 🔴', 'success');
+
+            } catch (error) {
+                console.error('Error starting broadcast:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+                document.getElementById('startBtn').disabled = false;
+            }
+        }
+
+        async function stopBroadcast() {
+            if (room) {
+                await room.disconnect();
+                room = null;
+            }
+            resetUI();
+            showStatus('Broadcast stopped', 'info');
+        }
+
+        function resetUI() {
+            document.getElementById('setupForm').style.display = 'block';
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('stats').classList.remove('show');
+            document.getElementById('roomInfo').classList.remove('show');
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('videoStatus').textContent = 'No';
+            document.getElementById('audioStatus').textContent = 'No';
+            document.getElementById('connectionStatus').textContent = 'Connecting...';
+        }
+
+        function updateViewerCount() {
+            if (room) {
+                // Count remote participants (viewers)
+                const viewerCount = room.participants.size;
+                document.getElementById('viewerCount').textContent = viewerCount;
+            }
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (room) {
+                room.disconnect();
+            }
+        });
+    </script>
+</body>
+
+</html>

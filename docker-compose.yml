@@ -1,0 +1,27 @@
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    command:
+      - --dev
+      - --keys
+      - "devkey: secret"
+      - --node-ip
+      - "127.0.0.1"
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
+    restart: unless-stopped
+    environment:
+      - LIVEKIT_BIND_ADDRESSES=0.0.0.0
+      - LIVEKIT_ADVERTISE_IP=127.0.0.1
+      - LIVEKIT_RTC_PORT_RANGE_START=7882
+      - LIVEKIT_RTC_PORT_RANGE_END=7882
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - livekit-network
+
+networks:
+  livekit-network:
+    driver: bridge

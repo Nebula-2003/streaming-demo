@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveKit Viewer - Watch Live Stream</title>
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        button.leave {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        #status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        #status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+            display: block;
+        }
+
+        #status.success {
+            background: #e8f5e9;
+            color: #388e3c;
+            display: block;
+        }
+
+        #status.error {
+            background: #ffebee;
+            color: #d32f2f;
+            display: block;
+        }
+
+        #videoContainer {
+            display: none;
+            margin-top: 30px;
+        }
+
+        #remoteVideo {
+            width: 100%;
+            border-radius: 12px;
+            background: #000;
+            display: block;
+            max-height: 600px;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            background: #ff0000;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .live-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .stream-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .stream-info.show {
+            display: block;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .no-stream {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            display: none;
+        }
+
+        .no-stream.show {
+            display: block;
+        }
+
+        .no-stream svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        #participantsList {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: none;
+        }
+
+        #participantsList.show {
+            display: block;
+        }
+
+        .participant-item {
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📺 Watch Live Stream</h1>
+        <p class="subtitle">Join and watch the broadcast</p>
+
+        <div id="status"></div>
+
+        <div id="setupForm">
+            <div class="form-group">
+                <label for="roomName">Room Name</label>
+                <input type="text" id="roomName" placeholder="my-live-stream" required>
+            </div>
+
+            <div class="form-group">
+                <label for="viewerName">Your Name (Optional)</label>
+                <input type="text" id="viewerName" placeholder="Viewer">
+            </div>
+
+            <button id="joinBtn" onclick="joinStream()">Join Stream</button>
+        </div>
+
+        <div class="stream-info" id="streamInfo">
+            <div class="live-badge">🔴 LIVE</div>
+            <div class="info-item">
+                <span class="info-label">Room:</span>
+                <span class="info-value" id="currentRoom"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Host:</span>
+                <span class="info-value" id="hostName">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Viewers:</span>
+                <span class="info-value" id="viewerCount">0</span>
+            </div>
+        </div>
+
+        <div id="videoContainer">
+            <video id="remoteVideo" autoplay playsinline controls></video>
+        </div>
+
+        <div class="no-stream" id="noStream">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <p><strong>Waiting for stream...</strong></p>
+            <p style="margin-top: 10px; font-size: 14px;">The host hasn't started broadcasting yet.</p>
+        </div>
+
+        <button id="leaveBtn" class="leave" onclick="leaveStream()" style="display: none;">Leave Stream</button>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let room = null;
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = type;
+        }
+
+        // Check for room in URL parameters
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomFromUrl = urlParams.get('room');
+            if (roomFromUrl) {
+                document.getElementById('roomName').value = roomFromUrl;
+            }
+        });
+
+        async function joinStream() {
+            const roomName = document.getElementById('roomName').value.trim();
+            let viewerName = document.getElementById('viewerName').value.trim();
+
+            if (!roomName) {
+                showStatus('Please enter a room name', 'error');
+                return;
+            }
+
+            if (!viewerName) {
+                viewerName = `Viewer-${Math.floor(Math.random() * 10000)}`;
+            }
+
+            try {
+                document.getElementById('joinBtn').disabled = true;
+                showStatus('Getting access token...', 'info');
+
+                // Get token from backend
+                const response = await fetch(`${API_URL}/api/token/viewer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ roomName, participantName: viewerName })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get token');
+                }
+
+                const data = await response.json();
+                showStatus('Connecting to stream...', 'info');
+
+                // Create room instance
+                room = new LivekitClient.Room({
+                    adaptiveStream: true,
+                    dynacast: true,
+                });
+
+                // Set up event listeners
+                room.on(LivekitClient.RoomEvent.Connected, () => {
+                    showStatus('Connected! Waiting for stream...', 'success');
+                    // Update UI elements
+                    document.getElementById('setupForm').style.display = 'none';
+                    document.getElementById('leaveBtn').style.display = 'block';
+                    document.getElementById('streamInfo').classList.add('show');
+                    document.getElementById('currentRoom').textContent = roomName;
+                });
+
+                room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                    console.log('Subscribed to track:', track.kind, 'from', participant.identity);
+
+                    if (track.kind === 'video') {
+                        const videoElement = document.getElementById('remoteVideo');
+                        track.attach(videoElement);
+                        document.getElementById('videoContainer').style.display = 'block';
+                        document.getElementById('noStream').classList.remove('show');
+                        showStatus('Watching live stream 🎥', 'success');
+                    }
+                });
+
+                room.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track) => {
+                    console.log('Unsubscribed from track:', track.kind);
+                    if (track.kind === 'video') {
+                        document.getElementById('videoContainer').style.display = 'none';
+                        document.getElementById('noStream').classList.add('show');
+                    }
+                });
+
+                room.on(LivekitClient.RoomEvent.ParticipantConnected, (participant) => {
+                    console.log('Participant joined:', participant.identity);
+                    updateViewerCount();
+                });
+
+                room.on(LivekitClient.RoomEvent.ParticipantDisconnected, (participant) => {
+                    console.log('Participant left:', participant.identity);
+                    updateViewerCount();
+                });
+
+                room.on(LivekitClient.RoomEvent.Disconnected, () => {
+                    showStatus('Disconnected from stream', 'error');
+                    resetUI();
+                });
+
+                // Connect to room
+                await room.connect(data.livekitUrl, data.token);
+
+                // Show "waiting for stream" message initially
+                // (tracks will be handled by TrackSubscribed event)
+                document.getElementById('noStream').classList.add('show');
+
+                updateViewerCount();
+                findHost();
+
+            } catch (error) {
+                console.error('Error joining stream:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+                document.getElementById('joinBtn').disabled = false;
+            }
+        }
+
+        async function leaveStream() {
+            if (room) {
+                await room.disconnect();
+                room = null;
+            }
+            resetUI();
+            showStatus('Left the stream', 'info');
+        }
+
+        function resetUI() {
+            document.getElementById('setupForm').style.display = 'block';
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('leaveBtn').style.display = 'none';
+            document.getElementById('streamInfo').classList.remove('show');
+            document.getElementById('noStream').classList.remove('show');
+            document.getElementById('joinBtn').disabled = false;
+        }
+
+        function updateViewerCount() {
+            if (room) {
+                // Count all participants (including host)
+                const totalCount = room.participants.size + 1; // +1 for local participant
+                document.getElementById('viewerCount').textContent = totalCount;
+            }
+        }
+
+        function findHost() {
+            if (room) {
+                // Find the participant who is publishing video (the host)
+                for (const participant of room.participants.values()) {
+                    if (participant.videoTracks.size > 0) {
+                        document.getElementById('hostName').textContent = participant.identity;
+                        break; // Found the host, no need to continue
+                    }
+                }
+            }
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (room) {
+                room.disconnect();
+            }
+        });
+    </script>
+</body>
+
+</html>
