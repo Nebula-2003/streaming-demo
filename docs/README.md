@@ -44,6 +44,7 @@ cp .env.example .env
 ```
 
 Default configuration:
+
 - LiveKit URL: `ws://localhost:7880`
 - API Key: `devkey`
 - API Secret: `secret`
@@ -54,16 +55,11 @@ Default configuration:
 In one terminal window:
 
 ```bash
-chmod +x start-livekit.sh
-./start-livekit.sh
-```
-
-Or run in detached mode (background):
-```bash
 docker compose up -d
 ```
 
 You should see:
+
 ```
 🚀 Starting LiveKit Server with Docker...
 📍 WebSocket URL: ws://localhost:7880
@@ -72,18 +68,14 @@ You should see:
 ```
 
 To stop the server:
+
 ```bash
-chmod +x stop-livekit.sh
-./stop-livekit.sh
-# or
 docker compose down
 ```
 
 To view logs:
+
 ```bash
-chmod +x logs-livekit.sh
-./logs-livekit.sh
-# or
 docker compose logs -f
 ```
 
@@ -96,6 +88,7 @@ npm start
 ```
 
 You should see:
+
 ```
 🎥 LiveKit Token Server Started
 ================================
@@ -107,6 +100,7 @@ You should see:
 ### 6. Open Client Applications
 
 **For the Host (Broadcaster):**
+
 1. Open `host.html` in your browser: `http://localhost:3000/host.html` or just open the file directly
 2. Enter a room name (e.g., "my-live-stream")
 3. Enter your name
@@ -115,6 +109,7 @@ You should see:
 6. Share the viewer link with your audience
 
 **For Viewers:**
+
 1. Open `viewer.html` in your browser: `http://localhost:3000/viewer.html` or use the link shared by the host
 2. Enter the same room name
 3. Optionally enter your name
@@ -144,11 +139,13 @@ You should see:
 ### Token Server API
 
 **Get LiveKit Configuration**
+
 ```http
 GET /api/config
 ```
 
 **Generate Host Token**
+
 ```http
 POST /api/token/host
 Content-Type: application/json
@@ -160,6 +157,7 @@ Content-Type: application/json
 ```
 
 **Generate Viewer Token**
+
 ```http
 POST /api/token/viewer
 Content-Type: application/json
@@ -192,10 +190,12 @@ Content-Type: application/json
 ## 🔒 Security Notes
 
 **For Development:**
+
 - Default credentials are fine for local testing
 - Uses `--dev` mode for LiveKit server
 
 **For Production:**
+
 - Change API keys and secrets in `.env` and `livekit-config.yaml`
 - Use HTTPS/WSS instead of HTTP/WS
 - Set up proper firewall rules
@@ -210,6 +210,7 @@ Content-Type: application/json
 To allow other devices on your local network to access:
 
 1. Find your local IP address:
+
    ```bash
    # Linux/macOS
    ip addr show | grep inet
@@ -218,6 +219,7 @@ To allow other devices on your local network to access:
    ```
 
 2. Update `.env`:
+
    ```
    LIVEKIT_URL=ws://YOUR_LOCAL_IP:7880
    ```
@@ -229,6 +231,7 @@ To allow other devices on your local network to access:
 ### Firewall Ports
 
 Make sure these ports are open:
+
 - `7880` - LiveKit WebSocket
 - `7881` - LiveKit TCP fallback
 - `50000-60000` - RTC port range
@@ -237,12 +240,14 @@ Make sure these ports are open:
 ## 🐛 Troubleshooting
 
 ### LiveKit Server Won't Start
+
 - Check if Docker is running: `docker info`
 - Check if ports 7880-7881 are available: `sudo lsof -i :7880`
 - View Docker logs: `docker compose logs`
 - Verify Docker Compose file syntax: `docker compose config`
 
 ### Can't Connect to Stream
+
 - Verify LiveKit server is running
 - Verify token server is running
 - Check browser console for errors
@@ -250,12 +255,14 @@ Make sure these ports are open:
 - Try different browser or clear cache
 
 ### No Video/Audio
+
 - Grant camera and microphone permissions
 - Check device settings in browser
 - Verify devices aren't being used by another application
 - Test with different camera/microphone
 
 ### Viewers Can't Join
+
 - Verify room name matches exactly
 - Check that host is broadcasting
 - Ensure token server is accessible
