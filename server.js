@@ -115,20 +115,27 @@ app.post('/api/token/viewer', async (req, res) => {
 
 // Serve host and viewer HTML pages
 app.get('/host', (req, res) => {
-    res.sendFile(path.join(__dirname, 'host.html'));
+    res.sendFile(path.join(__dirname, '/public/host.html'));
 });
 
 app.get('/viewer', (req, res) => {
-    res.sendFile(path.join(__dirname, 'viewer.html'));
+    res.sendFile(path.join(__dirname, '/public/viewer.html'));
 });
+
+const serverHost = process.env.SERVER_HOST || 'localhost';
+
+
 
 // Start HTTP server
 app.listen(PORT, () => {
     console.log('🎥 LiveKit Token Server Started');
     console.log('================================');
-    console.log(`🚀 HTTP Server: http://localhost:${PORT}`);
+    console.log(`🚀 HTTP Server: http://${serverHost}:${PORT}`);
     console.log(`🔗 LiveKit URL: ${LIVEKIT_URL}`);
     console.log(`🔑 API Key: ${LIVEKIT_API_KEY}`);
+    console.log('');
+    console.log('Host Endpoint:');
+    console.log(`  - http://${serverHost}:${PORT}/host`);
     console.log('');
     console.log('Available endpoints:');
     console.log(`  - GET  /host`);

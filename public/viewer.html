@@ -262,7 +262,7 @@
         </div>
 
         <div class="stream-info" id="streamInfo">
-            <div class="live-badge">🔴 LIVE</div>
+            <div class="live-badge">LIVE</div>
             <div class="info-item">
                 <span class="info-label">Room:</span>
                 <span class="info-value" id="currentRoom"></span>
@@ -368,6 +368,13 @@
                         document.getElementById('videoContainer').style.display = 'block';
                         document.getElementById('noStream').classList.remove('show');
                         showStatus('Watching live stream 🎥', 'success');
+                        // Update host name
+                        document.getElementById('hostName').textContent = participant.identity;
+                    } else if (track.kind === 'audio') {
+                        // Attach audio to the same video element
+                        const videoElement = document.getElementById('remoteVideo');
+                        track.attach(videoElement);
+                        console.log('Audio track attached');
                     }
                 });
 
@@ -397,12 +404,48 @@
                 // Connect to room
                 await room.connect(data.livekitUrl, data.token);
 
-                // Show "waiting for stream" message initially
-                // (tracks will be handled by TrackSubscribed event)
-                document.getElementById('noStream').classList.add('show');
+                // Ensure viewer doesn't publish audio/video
+                await room.localParticipant.setMicrophoneEnabled(false);
+                await room.localParticipant.setCameraEnabled(false);
+
+                // Check if there are already video tracks available
+                let hasVideo = false;
+                if (room.participants && room.participants.size > 0) {
+                    room.participants.forEach((participant) => {
+                        const videoElement = document.getElementById('remoteVideo');
+
+                        // Attach existing video tracks
+                        if (participant.videoTracks && participant.videoTracks.size > 0) {
+                            participant.videoTracks.forEach((publication) => {
+                                if (publication.track) {
+                                    publication.track.attach(videoElement);
+                                    document.getElementById('videoContainer').style.display = 'block';
+                                    showStatus('Watching live stream 🎥', 'success');
+                                    hasVideo = true;
+                                }
+                            });
+                            // Set host name
+                            document.getElementById('hostName').textContent = participant.identity;
+                        }
+
+                        // Attach existing audio tracks
+                        if (participant.audioTracks && participant.audioTracks.size > 0) {
+                            participant.audioTracks.forEach((publication) => {
+                                if (publication.track) {
+                                    publication.track.attach(videoElement);
+                                    console.log('Existing audio track attached from', participant.identity);
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Show "waiting for stream" if no video found
+                if (!hasVideo) {
+                    document.getElementById('noStream').classList.add('show');
+                }
 
                 updateViewerCount();
-                findHost();
 
             } catch (error) {
                 console.error('Error joining stream:', error);
@@ -438,10 +481,10 @@
         }
 
         function findHost() {
-            if (room) {
+            if (room && room.participants && room.participants.values) {
                 // Find the participant who is publishing video (the host)
                 for (const participant of room.participants.values()) {
-                    if (participant.videoTracks.size > 0) {
+                    if (participant.videoTracks && participant.videoTracks.size > 0) {
                         document.getElementById('hostName').textContent = participant.identity;
                         break; // Found the host, no need to continue
                     }
