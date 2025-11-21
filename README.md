@@ -26,16 +26,7 @@ A complete video streaming solution using self-hosted LiveKit server with Docker
 npm install
 ```
 
-### 2. Setup LiveKit Server
-
-```bash
-chmod +x install-livekit.sh
-./install-livekit.sh
-```
-
-This will check for Docker, create configuration files, and set up the environment.
-
-### 3. Configure Environment
+### 2. Configure Environment
 
 Copy the example environment file and adjust if needed:
 
@@ -50,7 +41,7 @@ Default configuration:
 - API Secret: `secret`
 - Token Server Port: `3000`
 
-### 4. Start LiveKit Server
+### 3. Start LiveKit Server
 
 In one terminal window:
 
@@ -79,7 +70,7 @@ To view logs:
 docker compose logs -f
 ```
 
-### 5. Start Token Server
+### 4. Start Token Server
 
 In another terminal window:
 
@@ -97,7 +88,7 @@ You should see:
 🔑 API Key: devkey
 ```
 
-### 6. Open Client Applications
+### 5. Open Client Applications
 
 **For the Host (Broadcaster):**
 
@@ -115,24 +106,6 @@ You should see:
 3. Optionally enter your name
 4. Click "Join Stream"
 5. Watch the live broadcast!
-
-## 📁 Project Structure
-
-```
-.
-├── server.js                 # Token generation API server
-├── host.html                 # Broadcaster client application
-├── viewer.html               # Viewer client application
-├── docker-compose.yml        # Docker Compose configuration for LiveKit
-├── install-livekit.sh        # Setup script (checks Docker, creates configs)
-├── start-livekit.sh          # Script to start LiveKit server
-├── stop-livekit.sh           # Script to stop LiveKit server
-├── logs-livekit.sh           # Script to view LiveKit logs
-├── livekit-config.yaml       # LiveKit server configuration
-├── package.json              # Node.js dependencies
-├── .env.example              # Environment variables template
-└── README.md                 # This file
-```
 
 ## 🔧 API Endpoints
 
