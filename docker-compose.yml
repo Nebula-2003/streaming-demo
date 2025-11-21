@@ -6,7 +6,7 @@ services:
       - --keys
       - "devkey: secret"
       - --node-ip
-      - "127.0.0.1"
+      - "192.168.1.154"
     ports:
       - "7880:7880"
       - "7881:7881"
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
     environment:
       - LIVEKIT_BIND_ADDRESSES=0.0.0.0
-      - LIVEKIT_ADVERTISE_IP=127.0.0.1
+      - LIVEKIT_ADVERTISE_IP=192.168.1.154
       - LIVEKIT_RTC_PORT_RANGE_START=7882
       - LIVEKIT_RTC_PORT_RANGE_END=7882
     extra_hosts:

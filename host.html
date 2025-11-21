@@ -254,7 +254,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3000';
+        const API_URL = window.location.origin;
         let room = null;
         let localTracks = [];
 
@@ -348,7 +348,7 @@
                 document.getElementById('roomInfo').classList.add('show');
                 document.getElementById('currentRoom').textContent = roomName;
 
-                const viewerUrl = `${window.location.origin}/viewer.html?room=${encodeURIComponent(roomName)}`;
+                const viewerUrl = `${window.location.origin}/viewer?room=${encodeURIComponent(roomName)}`;
                 document.getElementById('shareLink').textContent = viewerUrl;
 
                 showStatus('Broadcasting live! 🔴', 'success');

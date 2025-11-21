@@ -1,16 +1,21 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
 const cors = require('cors');
 const { AccessToken } = require('livekit-server-sdk');
 require('dotenv').config();
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'devkey';
 const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || 'secret';
 const LIVEKIT_URL = process.env.LIVEKIT_URL || 'ws://localhost:7880';
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -108,16 +113,29 @@ app.post('/api/token/viewer', async (req, res) => {
     }
 });
 
+// Serve host and viewer HTML pages
+app.get('/host', (req, res) => {
+    res.sendFile(path.join(__dirname, 'host.html'));
+});
+
+app.get('/viewer', (req, res) => {
+    res.sendFile(path.join(__dirname, 'viewer.html'));
+});
+
+// Start HTTP server
 app.listen(PORT, () => {
     console.log('🎥 LiveKit Token Server Started');
     console.log('================================');
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`🚀 HTTP Server: http://localhost:${PORT}`);
     console.log(`🔗 LiveKit URL: ${LIVEKIT_URL}`);
     console.log(`🔑 API Key: ${LIVEKIT_API_KEY}`);
     console.log('');
     console.log('Available endpoints:');
-    console.log(`  - POST http://localhost:${PORT}/api/token/host`);
-    console.log(`  - POST http://localhost:${PORT}/api/token/viewer`);
-    console.log(`  - GET  http://localhost:${PORT}/api/config`);
+    console.log(`  - GET  /host`);
+    console.log(`  - GET  /viewer`);
+    console.log(`  - POST /api/token/host`);
+    console.log(`  - POST /api/token/viewer`);
+    console.log(`  - GET  /api/config`);
+    console.log(`  - GET  /health`);
     console.log('');
 });

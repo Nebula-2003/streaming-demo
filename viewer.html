@@ -294,7 +294,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3000';
+        const API_URL = window.location.origin;
         let room = null;
 
         function showStatus(message, type = 'info') {
@@ -430,7 +430,7 @@
         }
 
         function updateViewerCount() {
-            if (room) {
+            if (room && room.participants) {
                 // Count all participants (including host)
                 const totalCount = room.participants.size + 1; // +1 for local participant
                 document.getElementById('viewerCount').textContent = totalCount;
