@@ -1,0 +1,2 @@
+google-chrome --unsafely-treat-insecure-origin-as-secure="http://192.168.1.154:3000" --user-data-dir=/tmp/chrome-dev
+ 
