@@ -305,11 +305,11 @@
 
                 room.on(LivekitClient.RoomEvent.ParticipantConnected, (participant) => {
                     console.log('Viewer joined:', participant.identity);
-                    updateViewerCount();
+                    updateViewerCount(true);
                 });
 
                 room.on(LivekitClient.RoomEvent.ParticipantDisconnected, () => {
-                    updateViewerCount();
+                    updateViewerCount(false);
                 });
 
                 room.on(LivekitClient.RoomEvent.Disconnected, () => {
@@ -381,14 +381,26 @@
             document.getElementById('connectionStatus').textContent = 'Connecting...';
         }
 
-        function updateViewerCount() {
-            if (room) {
-                // Count remote participants (viewers)
-                const viewerCount = room.participants.size;
-                document.getElementById('viewerCount').textContent = viewerCount;
-            }
-        }
+  function updateViewerCount(isConnected = true) {
+    if (!room) return;
+ 
+    const roomKey = `viewerCount`;
 
+    let viewerCount = parseInt(localStorage.getItem(roomKey) || '0', 10);
+ 
+    if (isConnected) {
+        viewerCount += 1;
+    } else {
+        viewerCount = Math.max(0, viewerCount - 1);
+    }
+
+    localStorage.setItem(roomKey, viewerCount);
+ 
+
+    document.getElementById('viewerCount').textContent = viewerCount;
+}
+
+ 
         // Clean up on page unload
         window.addEventListener('beforeunload', () => {
             if (room) {
