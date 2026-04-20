@@ -5,7 +5,8 @@ services:
     image: livekit/livekit-server:latest
     command:
       - --keys
-      - "devkey: secret"
+      # Secret must be ≥32 chars (LiveKit rejects short secrets outside --dev)
+      - "devkey: f6d5c4b3a2918e7d6c5b4a39281706f5"
       - --node-ip
       - "${LIVEKIT_ADVERTISE_IP:-127.0.0.1}"
     ports:

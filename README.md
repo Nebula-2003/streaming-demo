@@ -38,7 +38,7 @@ Default configuration:
 
 - LiveKit URL: `ws://localhost:7880`
 - API Key: `devkey`
-- API Secret: `secret`
+- API Secret: `f6d5c4b3a2918e7d6c5b4a39281706f5` (32+ chars; see `.env`)
 - Token Server Port: `3000`
 
 ### 3. Start LiveKit Server
@@ -55,7 +55,7 @@ You should see:
 🚀 Starting LiveKit Server with Docker...
 📍 WebSocket URL: ws://localhost:7880
 🔑 API Key: devkey
-🔐 API Secret: secret
+🔐 API Secret: (see `.env.example` — must be ≥32 chars)
 ```
 
 To stop the server:
