@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DBoxHub — Project Documentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+
+  :root {
+    --bg: #0b0e13;
+    --surface: #13181f;
+    --surface2: #1a2130;
+    --border: #1f2d3d;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #22c55e;
+    --warn: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --heading: #f8fafc;
+    --tag-bg: #0d1f2d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .logo-mark {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--heading);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-mark span { color: var(--accent); }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .nav-section {
+    padding: 6px 12px;
+    margin-bottom: 2px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 8px 12px 4px;
+  }
+
+  .nav-item {
+    display: block;
+    padding: 7px 24px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    border-radius: 0;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+  }
+
+  .nav-item:hover, .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(0,212,255,0.05);
+  }
+
+  .nav-item .num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    opacity: 0.5;
+    margin-right: 6px;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    padding: 48px 56px;
+    max-width: 960px;
+  }
+
+  /* HERO */
+  .hero {
+    margin-bottom: 64px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    border: 1px solid rgba(0,212,255,0.2);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--heading);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  .tagline {
+    margin-top: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent3);
+    letter-spacing: 0.5px;
+  }
+
+  .tagline::before { content: '→ '; }
+
+  .stack-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 64px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.5px;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--heading);
+    margin: 28px 0 12px;
+    letter-spacing: -0.3px;
+  }
+
+  h4 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 20px 0 8px;
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  /* FLAGS */
+  .flag {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px 16px;
+    border-radius: 3px;
+    margin: 10px 0;
+    font-size: 13.5px;
+  }
+
+  .flag.assumption {
+    background: rgba(245,158,11,0.08);
+    border-left: 3px solid var(--warn);
+  }
+
+  .flag.recommend {
+    background: rgba(34,197,94,0.07);
+    border-left: 3px solid var(--accent3);
+  }
+
+  .flag-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .flag strong { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  thead th {
+    background: var(--surface2);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 9px 14px; vertical-align: top; }
+
+  .td-name { font-family: 'DM Mono', monospace; color: var(--accent); font-size: 12.5px; }
+  .td-type { font-family: 'DM Mono', monospace; color: var(--accent2); font-size: 12px; }
+  .td-method { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600; }
+  .get { color: #22c55e; }
+  .post { color: #3b82f6; }
+  .put { color: #f59e0b; }
+  .delete { color: #ef4444; }
+  .patch { color: #a78bfa; }
+
+  /* CHECK/CROSS */
+  .yes { color: #22c55e; text-align: center; }
+  .no { color: #ef4444; text-align: center; }
+  .partial { color: #f59e0b; text-align: center; }
+
+  /* CODE */
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: var(--accent);
+  }
+
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #a5f3fc;
+  }
+
+  /* LISTS */
+  ul, ol {
+    padding-left: 22px;
+    margin-bottom: 14px;
+  }
+
+  li { margin-bottom: 5px; }
+
+  /* STEP FLOW */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 16px 0 24px;
+  }
+
+  .flow-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 12px 0;
+    position: relative;
+  }
+
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 40px;
+    bottom: -2px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    background: var(--accent);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 2px;
+    z-index: 1;
+  }
+
+  .step-content strong {
+    display: block;
+    color: var(--heading);
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+
+  .step-content span { color: var(--muted); font-size: 13.5px; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    padding: 6px 0 6px 26px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+  .checklist li:last-child { border: none; }
+  .checklist li::before {
+    content: '☐';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 16px;
+  }
+
+  /* ROLE BADGE */
+  .role {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin: 1px;
+  }
+
+  .role-admin { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+  .role-owner { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+  .role-staff { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+  .role-customer { background: rgba(245,158,11,0.1); color: var(--warn); border: 1px solid rgba(245,158,11,0.2); }
+
+  /* MILESTONE CARD */
+  .milestone {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .milestone::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .m1::before { background: var(--accent); }
+  .m2::before { background: var(--accent2); }
+  .m3::before { background: var(--accent3); }
+  .m4::before { background: var(--warn); }
+
+  .milestone-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .m1 .milestone-label { color: var(--accent); }
+  .m2 .milestone-label { color: #a78bfa; }
+  .m3 .milestone-label { color: var(--accent3); }
+  .m4 .milestone-label { color: var(--warn); }
+
+  .milestone h3 { margin-top: 0; }
+
+  /* SCHEMA BLOCK */
+  .schema {
+    background: #0a1520;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin: 12px 0 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+
+  .schema-table { color: #f472b6; font-weight: 500; }
+  .schema-col { color: #a5f3fc; }
+  .schema-type { color: #a78bfa; }
+  .schema-constraint { color: #6ee7b7; font-size: 11px; }
+  .schema-comment { color: #475569; }
+
+  /* NOTIFICATION TEMPLATE */
+  .notif-template {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin: 10px 0;
+  }
+
+  .notif-title { color: var(--heading); font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .notif-body { color: var(--muted); font-size: 13.5px; }
+  .notif-channels { margin-top: 8px; display: flex; gap: 6px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* PRINT */
+  @media print {
+    .sidebar { display: none; }
+    .main { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">D<span>Box</span>Hub</div>
+    <div class="logo-sub">v1.0 · Milestone 1 Docs</div>
+  </div>
+
+  <div class="nav-label">Documentation</div>
+  <a class="nav-item active" href="#summary"><span class="num">01</span>Project Summary</a>
+  <a class="nav-item" href="#glossary"><span class="num">02</span>Terminology</a>
+  <a class="nav-item" href="#architecture"><span class="num">03</span>Architecture</a>
+  <a class="nav-item" href="#schema"><span class="num">04</span>Database Schema</a>
+  <a class="nav-item" href="#api"><span class="num">05</span>API Endpoints</a>
+  <a class="nav-item" href="#features"><span class="num">06</span>Feature Specs</a>
+  <a class="nav-item" href="#flows"><span class="num">07</span>User Flows</a>
+  <a class="nav-item" href="#permissions"><span class="num">08</span>Permissions</a>
+  <a class="nav-item" href="#notifications"><span class="num">09</span>Notifications</a>
+  <a class="nav-item" href="#checklist"><span class="num">10</span>Delivery Checklist</a>
+  <a class="nav-item" href="#roadmap"><span class="num">11</span>Roadmap</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Project Documentation · Milestone 1</div>
+    <h1>D<span>Box</span>Hub</h1>
+    <p class="hero-sub">Sports Ground Booking Platform for Box Cricket & Pickleball — Mobile + Web + Backend</p>
+    <p class="tagline">"Book Your Court. Own Your Game."</p>
+    <div class="stack-pills">
+      <span class="pill">Node.js</span>
+      <span class="pill">PostgreSQL</span>
+      <span class="pill">React.js</span>
+      <span class="pill">React Native</span>
+      <span class="pill">Android</span>
+      <span class="pill">iOS</span>
+    </div>
+  </div>
+
+  <!-- 1. PROJECT SUMMARY -->
+  <section class="section" id="summary">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Project Summary</h2>
+    </div>
+
+    <h3>Problem Statement</h3>
+    <p>Sports enthusiasts looking to book Box Cricket or Pickleball courts face a fragmented, manual process — phone calls, WhatsApp messages, and in-person visits with no real-time slot visibility. Venue operators struggle with manual booking registers, overbooking conflicts, and no consolidated dashboard for managing multiple courts or staff. There is no dedicated, India-first platform for niche indoor/box sports booking.</p>
+
+    <h3>Solution Overview</h3>
+    <p>DBoxHub is a unified booking platform that connects customers to nearby sports venues through a mobile app, while empowering venue operators with a dedicated management interface. A master admin panel provides platform-wide oversight of venues, courts, categories, and users.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h4>For Customers</h4>
+        <ul>
+          <li>Discover nearby venues on a map</li>
+          <li>Browse courts, pricing & availability</li>
+          <li>Book multiple time slots in one go</li>
+          <li>Receive confirmation & reminders</li>
+          <li>Manage and cancel bookings</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>For Venue Operators</h4>
+        <ul>
+          <li>Manage courts, slots & pricing</li>
+          <li>Create manual bookings</li>
+          <li>View revenue & utilization</li>
+          <li>Staff access with restricted permissions</li>
+          <li>Real-time booking notifications</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Target Users</h3>
+    <ul>
+      <li><strong>Customers:</strong> Sports enthusiasts aged 18–45 looking to book Box Cricket or Pickleball courts</li>
+      <li><strong>Venue Owners:</strong> Individual or corporate owners of sports facilities managing one or more venues</li>
+      <li><strong>Venue Staff:</strong> Receptionists, managers, or ground staff who handle day-to-day bookings</li>
+      <li><strong>Super Admin:</strong> DBoxHub internal operations team managing the entire platform</li>
+    </ul>
+
+    <h3>Key Differentiators</h3>
+    <ul>
+      <li>Niche focus on Box Cricket and Pickleball (extendable to other sports)</li>
+      <li>Multi-slot booking in a single transaction</li>
+      <li>Single app with role-aware UI for owners, staff, and customers</li>
+      <li>Real-time slot availability with geo-based discovery</li>
+      <li>Venue owner manual booking capability</li>
+    </ul>
+
+    <h3>Suggested Tagline</h3>
+    <div class="card" style="border-left: 3px solid var(--accent);">
+      <p style="font-family: 'Syne', sans-serif; font-size: 18px; color: var(--heading); margin: 0;">"Book Your Court. Own Your Game."</p>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 8px;">Alt: "Every Game Starts with a Booking." · "Your Sport. Your Slot. Your Hub."</p>
+    </div>
+  </section>
+
+  <!-- 2. GLOSSARY -->
+  <section class="section" id="glossary">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Naming & Terminology</h2>
+    </div>
+
+    <div class="flag recommend">
+      <span class="flag-icon">💡</span>
+      <div><strong>Recommendation</strong> Use <strong>"Venue"</strong> instead of "Vendor". "Venue" is the standard industry term for a sports booking platform (used by Playo, Hudle, CourtReserve), accurately represents a physical location, and pairs naturally with "Court". Avoid "Facility" (too clinical), "Club" (implies membership), "Arena" (suggests large-scale events).</div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Term</th>
+            <th>Definition</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-name">Venue</td>
+            <td>A physical sports facility location with an address, geo-coordinates, and operating hours. Owned by a Venue Owner. Can contain multiple Courts.</td>
+            <td>Replaces "Vendor"</td>
+          </tr>
+          <tr>
+            <td class="td-name">Court</td>
+            <td>A specific playable area within a Venue (e.g., "Court A", "Box 1"). Belongs to one Sports Category. Has its own pricing, slot duration, and capacity.</td>
+            <td>Also called "Ground" or "Box"</td>
+          </tr>
+          <tr>
+            <td class="td-name">Sports Category</td>
+            <td>The type of sport a court is designated for (e.g., Box Cricket, Pickleball). Admin-managed and extendable.</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="td-name">Time Slot</td>
+            <td>A defined booking window for a court (e.g., 6:00–7:00 AM). Generated based on court's operating hours and slot duration configuration.</td>
+            <td>Master config per court</td>
+          </tr>
+          <tr>
+            <td class="td-name">Booking</td>
+            <td>A confirmed reservation made by a Customer (or manually by a Venue Owner/Staff) for one or more Time Slots on a specific Court and date.</td>
+            <td>Has status: pending / confirmed / cancelled</td>
+          </tr>
+          <tr>
+            <td class="td-name">Booking Slot</td>
+            <td>A junction record linking a Booking to a specific Time Slot. Supports multi-slot bookings (one booking → many booking_slots).</td>
+            <td>Child of Booking</td>
+          </tr>
+          <tr>
+            <td class="td-name">Venue Owner</td>
+            <td>A user role with full management rights for their assigned Venue(s): courts, slots, bookings, staff, and revenue.</td>
+            <td>role = venue_owner</td>
+          </tr>
+          <tr>
+            <td class="td-name">Venue User / Staff</td>
+            <td>A sub-user created under a Venue Owner. Can manage bookings but cannot access revenue or venue settings.</td>
+            <td>role = venue_user</td>
+          </tr>
+          <tr>
+            <td class="td-name">Customer</td>
+            <td>An end user who discovers venues, books courts, and manages their own bookings through the mobile app.</td>
+            <td>role = customer</td>
+          </tr>
+          <tr>
+            <td class="td-name">Super Admin</td>
+            <td>Internal DBoxHub platform administrator with full access to all modules via the Master Admin Panel.</td>
+            <td>role = super_admin</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3. ARCHITECTURE -->
+  <section class="section" id="architecture">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>System Architecture</h2>
+    </div>
+
+    <h3>High-Level Architecture</h3>
+    <pre>
+┌─────────────────────────────────────────────────────────────┐
+│                        CLIENTS                              │
+│                                                             │
+│  ┌──────────────────┐       ┌───────────────────────────┐  │
+│  │  Master Admin    │       │   Mobile App (React Native)│  │
+│  │  Panel (React)   │       │   Android + iOS            │  │
+│  │  Internal Only   │       │   3 Roles: Owner/Staff/    │  │
+│  └────────┬─────────┘       │   Customer                 │  │
+│           │                 └──────────────┬────────────┘  │
+└───────────┼──────────────────────────────--┼───────────────┘
+            │                                │
+            ▼                                ▼
+┌───────────────────────────────────────────────────────────┐
+│               REST API  (Node.js + Express)                │
+│               Base URL: /api/v1                            │
+│                                                            │
+│   Auth Middleware (JWT)  →  Role Guards                    │
+│   Modules: auth | venues | courts | slots | bookings       │
+│            users | categories | admin                      │
+└───────────────┬───────────────────────────────────────────┘
+                │
+        ┌───────┴──────┐
+        ▼              ▼
+┌──────────────┐  ┌────────────────┐
+│  PostgreSQL  │  │  File Storage  │
+│  Database    │  │  (AWS S3 /     │
+│              │  │  Cloudinary)   │
+└──────────────┘  └────────────────┘
+        │
+        ▼
+┌─────────────────────────────────┐
+│  Background Services            │
+│  - Notification Service         │
+│    (FCM + APNs + SendGrid)      │
+│  - Slot Generator (cron)        │
+│  - Payment Gateway (Razorpay)   │
+└─────────────────────────────────┘
+    </pre>
+
+    <h3>Component Breakdown</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Component</th><th>Technology</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Master Admin Panel</td><td>React.js + Ant Design / Shadcn</td><td>Internal platform management</td></tr>
+          <tr><td>Mobile App</td><td>React Native (Expo)</td><td>Customer + Owner + Staff app</td></tr>
+          <tr><td>REST API</td><td>Node.js + Express.js</td><td>Business logic, data layer</td></tr>
+          <tr><td>Database</td><td>PostgreSQL 15</td><td>Primary data store</td></tr>
+          <tr><td>File Storage</td><td>AWS S3 or Cloudinary</td><td>Venue/court images</td></tr>
+          <tr><td>Auth</td><td>JWT (Access + Refresh tokens)</td><td>Stateless auth, role-based</td></tr>
+          <tr><td>Maps / Geo</td><td>Google Maps SDK</td><td>Nearby venue discovery</td></tr>
+          <tr><td>Push Notifications</td><td>Firebase Cloud Messaging</td><td>Android + iOS push</td></tr>
+          <tr><td>Email</td><td>SendGrid</td><td>Booking confirmations</td></tr>
+          <tr><td>SMS / OTP</td><td>Twilio / MSG91</td><td>Customer phone verification</td></tr>
+          <tr><td>Payment (Future)</td><td>Razorpay</td><td>Slot payment processing</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flag recommend">
+      <span class="flag-icon">💡</span>
+      <div><strong>Recommendation</strong> Use <strong>MSG91</strong> for OTP/SMS if targeting Indian market — better rates and delivery for Indian phone numbers vs Twilio. Use <strong>Razorpay</strong> as payment gateway (best UPI + card support in India).</div>
+    </div>
+
+    <h3>Authentication Strategy</h3>
+    <p>JWT-based stateless authentication with short-lived <strong>access tokens</strong> (15 min) and long-lived <strong>refresh tokens</strong> (30 days) stored in HTTP-only cookies (web) or SecureStore (mobile).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Role</th><th>Token Claim</th><th>Login Method</th></tr></thead>
+        <tbody>
+          <tr><td><span class="role role-admin">super_admin</span></td><td><code>role: "super_admin"</code></td><td>Email + Password</td></tr>
+          <tr><td><span class="role role-owner">venue_owner</span></td><td><code>role: "venue_owner", venue_id</code></td><td>Email + Password</td></tr>
+          <tr><td><span class="role role-staff">venue_user</span></td><td><code>role: "venue_user", venue_id</code></td><td>Email + Password</td></tr>
+          <tr><td><span class="role role-customer">customer</span></td><td><code>role: "customer"</code></td><td>Phone OTP or Email</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>API Design</h3>
+    <ul>
+      <li>RESTful, versioned at <code>/api/v1/</code></li>
+      <li>JSON request/response bodies</li>
+      <li>Standard HTTP status codes (200, 201, 400, 401, 403, 404, 409, 500)</li>
+      <li>Pagination via <code>?page=1&limit=20</code></li>
+      <li>Geo-filtering via <code>?lat=23.02&lng=72.57&radius=10</code></li>
+      <li>Error format: <code>{"success": false, "error": {"code": "SLOT_UNAVAILABLE", "message": "..."}}</code></li>
+    </ul>
+  </section>
+
+  <!-- 4. DATABASE SCHEMA -->
+  <section class="section" id="schema">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Database Schema</h2>
+    </div>
+
+    <div class="flag assumption">
+      <span class="flag-icon">⚠️</span>
+      <div><strong>Assumption</strong> Soft deletes are used throughout (deleted_at timestamp). Slot duration defaults to 60 minutes. UUID used for all primary keys.</div>
+    </div>
+
+    <h3>users</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE users</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY DEFAULT gen_random_uuid()</span><br>
+      &nbsp;&nbsp;<span class="schema-col">name</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(120)</span>&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">email</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(180)</span>&nbsp;&nbsp;<span class="schema-constraint">UNIQUE</span><br>
+      &nbsp;&nbsp;<span class="schema-col">phone</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(20)</span>&nbsp;&nbsp;&nbsp;<span class="schema-constraint">UNIQUE</span><br>
+      &nbsp;&nbsp;<span class="schema-col">password_hash</span>&nbsp;&nbsp;<span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">role</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">ENUM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">('super_admin','venue_owner','venue_user','customer') NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">venue_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → venues.id (nullable, for owner/staff)</span><br>
+      &nbsp;&nbsp;<span class="schema-col">profile_image</span>&nbsp;&nbsp;<span class="schema-type">TEXT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- S3 URL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">is_active</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">BOOLEAN</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT true</span><br>
+      &nbsp;&nbsp;<span class="schema-col">fcm_token</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Push notification token</span><br>
+      &nbsp;&nbsp;<span class="schema-col">last_login_at</span>&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span><br>
+      &nbsp;&nbsp;<span class="schema-col">deleted_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Soft delete</span>
+    </div>
+
+    <h3>sports_categories</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE sports_categories</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">name</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(80)</span>&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL UNIQUE</span>&nbsp;&nbsp;<span class="schema-comment">-- e.g., "Box Cricket"</span><br>
+      &nbsp;&nbsp;<span class="schema-col">icon_url</span>&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">is_active</span>&nbsp;&nbsp;<span class="schema-type">BOOLEAN</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT true</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span>&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span>
+    </div>
+
+    <h3>venues</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE venues</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">name</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(150)</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">description</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">address_line</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">city</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(80)</span><br>
+      &nbsp;&nbsp;<span class="schema-col">state</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(80)</span><br>
+      &nbsp;&nbsp;<span class="schema-col">pincode</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(10)</span><br>
+      &nbsp;&nbsp;<span class="schema-col">latitude</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">DECIMAL(10,7)</span>&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">longitude</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">DECIMAL(10,7)</span>&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">geolocation</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">GEOGRAPHY(POINT)</span><span class="schema-comment">-- PostGIS for geo queries</span><br>
+      &nbsp;&nbsp;<span class="schema-col">images</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT[]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Array of S3 URLs</span><br>
+      &nbsp;&nbsp;<span class="schema-col">opening_time</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIME</span><br>
+      &nbsp;&nbsp;<span class="schema-col">closing_time</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIME</span><br>
+      &nbsp;&nbsp;<span class="schema-col">operating_days</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">INT[]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- [0-6] Sun=0</span><br>
+      &nbsp;&nbsp;<span class="schema-col">owner_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → users.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">status</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">ENUM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">('active','inactive','pending') DEFAULT 'pending'</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span><br>
+      &nbsp;&nbsp;<span class="schema-col">deleted_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>
+    </div>
+
+    <h3>courts</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE courts</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">venue_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → venues.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">category_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → sports_categories.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">name</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(100)</span>&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">capacity</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">INT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Max players</span><br>
+      &nbsp;&nbsp;<span class="schema-col">price_per_slot</span>&nbsp;&nbsp;&nbsp;<span class="schema-type">DECIMAL(10,2)</span>&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">slot_duration</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">INT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Minutes, default 60</span><br>
+      &nbsp;&nbsp;<span class="schema-col">amenities</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT[]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- ['Floodlights','Parking','Washroom']</span><br>
+      &nbsp;&nbsp;<span class="schema-col">images</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT[]</span><br>
+      &nbsp;&nbsp;<span class="schema-col">is_active</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">BOOLEAN</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT true</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span><br>
+      &nbsp;&nbsp;<span class="schema-col">deleted_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>
+    </div>
+
+    <h3>time_slots (Master Slot Config)</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE time_slots</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">court_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → courts.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">start_time</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIME</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">end_time</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIME</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">day_of_week</span>&nbsp;&nbsp;<span class="schema-type">INT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- 0=Sun...6=Sat, NULL = all days</span><br>
+      &nbsp;&nbsp;<span class="schema-col">is_enabled</span>&nbsp;&nbsp;&nbsp;<span class="schema-type">BOOLEAN</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT true</span><br>
+      &nbsp;&nbsp;<span class="schema-col">price_override</span>&nbsp;<span class="schema-type">DECIMAL(10,2)</span><span class="schema-comment">-- Peak hour pricing</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span>&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span>
+    </div>
+
+    <h3>bookings</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE bookings</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">booking_ref</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(20)</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">UNIQUE NOT NULL</span>&nbsp;&nbsp;<span class="schema-comment">-- e.g., DBH-20240315-0042</span><br>
+      &nbsp;&nbsp;<span class="schema-col">court_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → courts.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">customer_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → users.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_by</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → users.id</span>&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Null if self-booked</span><br>
+      &nbsp;&nbsp;<span class="schema-col">booking_date</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">DATE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">total_amount</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">DECIMAL(10,2)</span>&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">status</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">ENUM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">('pending','confirmed','cancelled','completed') DEFAULT 'confirmed'</span><br>
+      &nbsp;&nbsp;<span class="schema-col">is_manual</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">BOOLEAN</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT false</span>&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- True if created by owner/staff</span><br>
+      &nbsp;&nbsp;<span class="schema-col">notes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">cancelled_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span><br>
+      &nbsp;&nbsp;<span class="schema-col">cancelled_by</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → users.id</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span>
+    </div>
+
+    <h3>booking_slots (Multi-slot support)</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE booking_slots</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">booking_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → bookings.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">time_slot_id</span>&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → time_slots.id NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">slot_date</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">DATE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">NOT NULL</span><br>
+      &nbsp;&nbsp;<span class="schema-col">slot_price</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">DECIMAL(10,2)</span>&nbsp;<span class="schema-constraint">NOT NULL</span>&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Snapshot at time of booking</span><br>
+      &nbsp;&nbsp;<span class="schema-col">status</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">ENUM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">('active','cancelled') DEFAULT 'active'</span><br>
+      &nbsp;&nbsp;<span class="schema-col">UNIQUE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">(time_slot_id, slot_date) -- Prevents double booking</span>
+    </div>
+
+    <h3>payments (Placeholder)</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE payments</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">booking_id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → bookings.id</span><br>
+      &nbsp;&nbsp;<span class="schema-col">amount</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">DECIMAL(10,2)</span><br>
+      &nbsp;&nbsp;<span class="schema-col">currency</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(5)</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT 'INR'</span><br>
+      &nbsp;&nbsp;<span class="schema-col">gateway</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(40)</span>&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- 'razorpay'</span><br>
+      &nbsp;&nbsp;<span class="schema-col">gateway_order_id</span>&nbsp;<span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">gateway_payment_id</span><span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">status</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">ENUM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">('pending','success','failed','refunded')</span><br>
+      &nbsp;&nbsp;<span class="schema-col">paid_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span>
+    </div>
+
+    <h3>notifications</h3>
+    <div class="schema">
+      <span class="schema-table">TABLE notifications</span><br>
+      &nbsp;&nbsp;<span class="schema-col">id</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">PRIMARY KEY</span><br>
+      &nbsp;&nbsp;<span class="schema-col">user_id</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">UUID</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">FK → users.id</span><br>
+      &nbsp;&nbsp;<span class="schema-col">type</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">VARCHAR(50)</span>&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- 'booking_confirmed', 'reminder', 'cancellation'</span><br>
+      &nbsp;&nbsp;<span class="schema-col">title</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">body</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">TEXT</span><br>
+      &nbsp;&nbsp;<span class="schema-col">data</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-type">JSONB</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-comment">-- Extra payload e.g. {booking_id}</span><br>
+      &nbsp;&nbsp;<span class="schema-col">is_read</span>&nbsp;&nbsp;&nbsp;<span class="schema-type">BOOLEAN</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT false</span><br>
+      &nbsp;&nbsp;<span class="schema-col">created_at</span><span class="schema-type">TIMESTAMP</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-constraint">DEFAULT NOW()</span>
+    </div>
+  </section>
+
+  <!-- 5. API ENDPOINTS -->
+  <section class="section" id="api">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>API Endpoints</h2>
+    </div>
+
+    <p>Base URL: <code>https://api.dboxhub.com/api/v1</code></p>
+
+    <h3>Auth</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/auth/login</code></td><td>Public</td><td>Email/password login → returns access + refresh tokens</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/auth/send-otp</code></td><td>Public</td><td>Send OTP to phone number (customer)</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/auth/verify-otp</code></td><td>Public</td><td>Verify OTP → returns tokens + creates account if new</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/auth/refresh</code></td><td>Refresh Token</td><td>Get new access token using refresh token</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/auth/logout</code></td><td>Any</td><td>Invalidate refresh token</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/auth/me</code></td><td>Any</td><td>Get current authenticated user profile</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Sports Categories</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/categories</code></td><td>Public</td><td>List all active categories</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/categories</code></td><td>super_admin</td><td>Create category</td></tr>
+          <tr><td><span class="td-method put">PUT</span></td><td><code>/categories/:id</code></td><td>super_admin</td><td>Update category</td></tr>
+          <tr><td><span class="td-method delete">DELETE</span></td><td><code>/categories/:id</code></td><td>super_admin</td><td>Soft delete category</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Venues</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/venues</code></td><td>super_admin</td><td>List all venues (admin), filters: status, city</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/venues/nearby</code></td><td>customer</td><td>Nearby venues by lat/lng/radius. ?lat=&lng=&radius=&category_id=</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/venues/:id</code></td><td>Public</td><td>Get venue detail with courts</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/venues</code></td><td>super_admin</td><td>Create venue</td></tr>
+          <tr><td><span class="td-method put">PUT</span></td><td><code>/venues/:id</code></td><td>super_admin / venue_owner</td><td>Update venue info</td></tr>
+          <tr><td><span class="td-method patch">PATCH</span></td><td><code>/venues/:id/status</code></td><td>super_admin</td><td>Activate / deactivate venue</td></tr>
+          <tr><td><span class="td-method delete">DELETE</span></td><td><code>/venues/:id</code></td><td>super_admin</td><td>Soft delete venue</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/venues/:id/images</code></td><td>super_admin / venue_owner</td><td>Upload venue images</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Courts</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/venues/:venueId/courts</code></td><td>Public</td><td>List courts for a venue</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/courts/:id</code></td><td>Public</td><td>Get court detail</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/venues/:venueId/courts</code></td><td>super_admin / venue_owner</td><td>Add court to venue</td></tr>
+          <tr><td><span class="td-method put">PUT</span></td><td><code>/courts/:id</code></td><td>super_admin / venue_owner</td><td>Update court details</td></tr>
+          <tr><td><span class="td-method patch">PATCH</span></td><td><code>/courts/:id/toggle</code></td><td>venue_owner / venue_user</td><td>Enable/disable court</td></tr>
+          <tr><td><span class="td-method delete">DELETE</span></td><td><code>/courts/:id</code></td><td>super_admin / venue_owner</td><td>Soft delete court</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Time Slots</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/courts/:courtId/slots</code></td><td>Public</td><td>Get available slots for a court + date. ?date=YYYY-MM-DD</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/courts/:courtId/slots/generate</code></td><td>venue_owner</td><td>Auto-generate slots based on court operating hours</td></tr>
+          <tr><td><span class="td-method put">PUT</span></td><td><code>/slots/:id</code></td><td>venue_owner</td><td>Update slot (price override, enable/disable)</td></tr>
+          <tr><td><span class="td-method patch">PATCH</span></td><td><code>/slots/:id/toggle</code></td><td>venue_owner / venue_user</td><td>Enable/disable a specific slot</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Bookings</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/bookings</code></td><td>customer</td><td>Create booking (multi-slot). Body: {court_id, date, slot_ids[]}</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/bookings/manual</code></td><td>venue_owner / venue_user</td><td>Manual booking on behalf of customer</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/bookings</code></td><td>super_admin</td><td>All bookings, filterable by venue/date/status</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/bookings/my</code></td><td>customer</td><td>Current user's bookings</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/bookings/venue/:venueId</code></td><td>venue_owner / venue_user</td><td>Bookings for a venue, filterable by date/court</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/bookings/:id</code></td><td>Any (own)</td><td>Get booking detail</td></tr>
+          <tr><td><span class="td-method patch">PATCH</span></td><td><code>/bookings/:id/cancel</code></td><td>customer / venue_owner / venue_user</td><td>Cancel booking</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Users / Owners / Staff</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/admin/users</code></td><td>super_admin</td><td>All users, filterable by role</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/admin/owners</code></td><td>super_admin</td><td>Create venue owner account + link to venue</td></tr>
+          <tr><td><span class="td-method post">POST</span></td><td><code>/venue/staff</code></td><td>venue_owner</td><td>Create staff/user under owner's venue</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/venue/staff</code></td><td>venue_owner</td><td>List all staff for owner's venue</td></tr>
+          <tr><td><span class="td-method patch">PATCH</span></td><td><code>/admin/users/:id/status</code></td><td>super_admin</td><td>Activate/deactivate user</td></tr>
+          <tr><td><span class="td-method put">PUT</span></td><td><code>/users/profile</code></td><td>Any</td><td>Update own profile</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Admin Dashboard Stats</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/admin/stats/overview</code></td><td>super_admin</td><td>Total venues, courts, bookings today, revenue today</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/admin/stats/bookings-chart</code></td><td>super_admin</td><td>Bookings by day (last 30 days)</td></tr>
+          <tr><td><span class="td-method get">GET</span></td><td><code>/venue/stats/overview</code></td><td>venue_owner</td><td>Today's bookings, revenue, court utilization %</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6. FEATURE SPECS -->
+  <section class="section" id="features">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Feature Specifications</h2>
+    </div>
+
+    <h3>Multi-Slot Booking</h3>
+    <div class="card">
+      <h4>User Story</h4>
+      <p>As a Customer, I want to select multiple consecutive or non-consecutive time slots for a court in a single booking, so I can play for longer without making separate transactions.</p>
+      <h4>Acceptance Criteria</h4>
+      <ul>
+        <li>Customer can select 1–N available slots on a date</li>
+        <li>Total amount is calculated as sum of individual slot prices</li>
+        <li>All selected slots must be available (not already booked)</li>
+        <li>Slot availability is checked in a transaction to prevent race conditions</li>
+        <li>Booking confirmation is sent immediately after success</li>
+      </ul>
+      <h4>Business Rules</h4>
+      <ul>
+        <li>Maximum 6 slots per single booking</li>
+        <li>Slots must be on the same court and same date</li>
+        <li>If any slot in the batch is unavailable, the entire booking fails</li>
+        <li>Cancelled slots become immediately available for rebooking</li>
+      </ul>
+      <div class="flag assumption">
+        <span class="flag-icon">⚠️</span>
+        <div><strong>Assumption</strong> Max 6 slots per booking. Adjust based on business requirement.</div>
+      </div>
+    </div>
+
+    <h3>Manual Booking (Owner/Staff)</h3>
+    <div class="card">
+      <h4>User Story</h4>
+      <p>As a Venue Owner/Staff, I want to create a booking on behalf of a walk-in or phone customer, so I can record it in the system without the customer needing the app.</p>
+      <h4>Acceptance Criteria</h4>
+      <ul>
+        <li>Owner/Staff can search for an existing customer by phone or create a guest entry</li>
+        <li>Can select court, date, and one or more slots</li>
+        <li>Booking is flagged as <code>is_manual: true</code></li>
+        <li>The <code>created_by</code> field records the staff member</li>
+        <li>Customer receives notification if they have the app</li>
+      </ul>
+    </div>
+
+    <h3>Cancellation Policy</h3>
+    <div class="card">
+      <h4>Business Rules</h4>
+      <ul>
+        <li>Customer can cancel up to 2 hours before slot start time</li>
+        <li>Owner/Staff can cancel any booking at any time</li>
+        <li>Super Admin can cancel any booking</li>
+        <li>Cancellation notifications are sent to all relevant parties</li>
+        <li>Cancelled slots are immediately released for rebooking</li>
+      </ul>
+      <div class="flag assumption">
+        <span class="flag-icon">⚠️</span>
+        <div><strong>Assumption</strong> 2-hour cancellation window assumed. Venue owners may want to configure this per venue in a future milestone.</div>
+      </div>
+    </div>
+
+    <h3>Venue Discovery (Nearby)</h3>
+    <div class="card">
+      <h4>User Story</h4>
+      <p>As a Customer, I want to see sports venues near my location on a map and list view, so I can find the most convenient place to play.</p>
+      <h4>Acceptance Criteria</h4>
+      <ul>
+        <li>App requests location permission on first use</li>
+        <li>Venues displayed within 10km radius (configurable)</li>
+        <li>Filterable by sports category</li>
+        <li>Shows venue name, distance, rating (future), starting price</li>
+        <li>Tapping a venue opens venue detail page</li>
+      </ul>
+      <div class="flag recommend">
+        <span class="flag-icon">💡</span>
+        <div><strong>Recommendation</strong> Use PostGIS <code>ST_DWithin</code> with a spatial index on <code>venues.geolocation</code> for efficient geo queries. Index: <code>CREATE INDEX venues_geo_idx ON venues USING GIST(geolocation);</code></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. USER FLOWS -->
+  <section class="section" id="flows">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>User Flows</h2>
+    </div>
+
+    <h3>Admin: Add a Venue + Courts</h3>
+    <div class="flow">
+      <div class="flow-step"><div class="step-num">1</div><div class="step-content"><strong>Login</strong><span>Admin logs in via Master Admin Panel with email + password</span></div></div>
+      <div class="flow-step"><div class="step-num">2</div><div class="step-content"><strong>Navigate to Venues</strong><span>Click "Venues" in sidebar → click "Add New Venue"</span></div></div>
+      <div class="flow-step"><div class="step-num">3</div><div class="step-content"><strong>Fill Venue Form</strong><span>Enter name, address, city, operating hours, upload images. Pin location on embedded map.</span></div></div>
+      <div class="flow-step"><div class="step-num">4</div><div class="step-content"><strong>Assign Venue Owner</strong><span>Select or create a Venue Owner account and link to this venue</span></div></div>
+      <div class="flow-step"><div class="step-num">5</div><div class="step-content"><strong>Save Venue</strong><span>Venue saved with status "pending". Admin activates after verification.</span></div></div>
+      <div class="flow-step"><div class="step-num">6</div><div class="step-content"><strong>Add Courts</strong><span>Open venue → click "Add Court" → enter court name, select Sports Category, price/slot, slot duration, amenities</span></div></div>
+      <div class="flow-step"><div class="step-num">7</div><div class="step-content"><strong>Generate Slots</strong><span>Click "Generate Slots" to auto-create time slots based on court's operating hours and slot duration</span></div></div>
+      <div class="flow-step"><div class="step-num">8</div><div class="step-content"><strong>Activate Venue</strong><span>Change venue status to "active" → now discoverable by customers</span></div></div>
+    </div>
+
+    <h3>Venue Owner: Manual Booking</h3>
+    <div class="flow">
+      <div class="flow-step"><div class="step-num">1</div><div class="step-content"><strong>Open App</strong><span>Owner logs into mobile app, lands on Owner Dashboard</span></div></div>
+      <div class="flow-step"><div class="step-num">2</div><div class="step-content"><strong>Tap "Create Booking"</strong><span>Select court and date from calendar view</span></div></div>
+      <div class="flow-step"><div class="step-num">3</div><div class="step-content"><strong>View Slot Grid</strong><span>Today's slot grid shown — green = available, red = booked, grey = disabled</span></div></div>
+      <div class="flow-step"><div class="step-num">4</div><div class="step-content"><strong>Select Slots</strong><span>Tap one or more available slots to select</span></div></div>
+      <div class="flow-step"><div class="step-num">5</div><div class="step-content"><strong>Enter Customer Info</strong><span>Search by phone number or enter guest name + phone manually</span></div></div>
+      <div class="flow-step"><div class="step-num">6</div><div class="step-content"><strong>Confirm Booking</strong><span>Review summary (slots, total amount) → tap "Confirm Booking"</span></div></div>
+      <div class="flow-step"><div class="step-num">7</div><div class="step-content"><strong>Notification Sent</strong><span>Customer receives push notification / SMS with booking reference</span></div></div>
+    </div>
+
+    <h3>Customer: Book Multiple Slots</h3>
+    <div class="flow">
+      <div class="flow-step"><div class="step-num">1</div><div class="step-content"><strong>Open App</strong><span>Customer opens DBoxHub app. Location permission requested.</span></div></div>
+      <div class="flow-step"><div class="step-num">2</div><div class="step-content"><strong>Browse Nearby Venues</strong><span>Map + list of venues within 10km. Filter by "Box Cricket" category.</span></div></div>
+      <div class="flow-step"><div class="step-num">3</div><div class="step-content"><strong>Select Venue</strong><span>Tap venue card → Venue Detail page with courts, pricing, photos, operating hours</span></div></div>
+      <div class="flow-step"><div class="step-num">4</div><div class="step-content"><strong>Select Court + Date</strong><span>Choose a court → pick a date from date picker</span></div></div>
+      <div class="flow-step"><div class="step-num">5</div><div class="step-content"><strong>Pick Slots</strong><span>Available slots shown. Customer taps multiple slots (e.g., 6–7 PM and 7–8 PM).</span></div></div>
+      <div class="flow-step"><div class="step-num">6</div><div class="step-content"><strong>Review Booking</strong><span>Summary: venue, court, date, slots selected, total amount</span></div></div>
+      <div class="flow-step"><div class="step-num">7</div><div class="step-content"><strong>Confirm</strong><span>Tap "Confirm Booking" → booking created, slots locked</span></div></div>
+      <div class="flow-step"><div class="step-num">8</div><div class="step-content"><strong>Confirmation</strong><span>Confirmation screen with booking ref (e.g., DBH-20240315-0042). Push notification + SMS sent.</span></div></div>
+    </div>
+
+    <h3>Customer: Cancel a Booking</h3>
+    <div class="flow">
+      <div class="flow-step"><div class="step-num">1</div><div class="step-content"><strong>Go to My Bookings</strong><span>Tap "My Bookings" tab → Upcoming tab</span></div></div>
+      <div class="flow-step"><div class="step-num">2</div><div class="step-content"><strong>Select Booking</strong><span>Tap the booking to view detail</span></div></div>
+      <div class="flow-step"><div class="step-num">3</div><div class="step-content"><strong>Tap Cancel</strong><span>"Cancel Booking" button shown only if slot is >2 hours away</span></div></div>
+      <div class="flow-step"><div class="step-num">4</div><div class="step-content"><strong>Confirm Cancellation</strong><span>Confirmation dialog: "Are you sure you want to cancel this booking?"</span></div></div>
+      <div class="flow-step"><div class="step-num">5</div><div class="step-content"><strong>Booking Cancelled</strong><span>Status updated to "cancelled". Slots released. Venue owner notified.</span></div></div>
+    </div>
+  </section>
+
+  <!-- 8. PERMISSIONS -->
+  <section class="section" id="permissions">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Role & Permission Matrix</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Super Admin</th>
+            <th>Venue Owner</th>
+            <th>Venue Staff</th>
+            <th>Customer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Admin Panel Login</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>View All Venues</td><td class="yes">✓</td><td class="partial">Own only</td><td class="partial">Own only</td><td class="partial">Public</td></tr>
+          <tr><td>Create Venue</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Edit Venue</td><td class="yes">✓</td><td class="partial">Own only</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Activate/Deactivate Venue</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Add Court</td><td class="yes">✓</td><td class="partial">Own venue</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Edit Court</td><td class="yes">✓</td><td class="partial">Own venue</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Enable/Disable Slot</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+          <tr><td>View All Bookings</td><td class="yes">✓</td><td class="partial">Own venue</td><td class="partial">Own venue</td><td class="partial">Own only</td></tr>
+          <tr><td>Create Booking (self)</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td></tr>
+          <tr><td>Create Manual Booking</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+          <tr><td>Cancel Any Booking</td><td class="yes">✓</td><td class="partial">Own venue</td><td class="partial">Own venue</td><td class="partial">Own &amp; in window</td></tr>
+          <tr><td>View Revenue Stats</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Create Owner Account</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Create Staff Account</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Manage Sports Categories</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>View Platform Dashboard</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Discover Nearby Venues</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 9. NOTIFICATIONS -->
+  <section class="section" id="notifications">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Notifications & Communication Plan</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Trigger</th><th>Recipients</th><th>Push</th><th>SMS</th><th>Email</th></tr></thead>
+        <tbody>
+          <tr><td>Booking Confirmed</td><td>Customer, Venue Owner</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Manual Booking Created</td><td>Customer (if on app)</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+          <tr><td>Booking Cancelled by Customer</td><td>Customer, Venue Owner/Staff</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">Customer only</td></tr>
+          <tr><td>Booking Cancelled by Venue</td><td>Customer</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Reminder (1 hour before)</td><td>Customer</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+          <tr><td>Reminder (24 hours before)</td><td>Customer</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>New Staff Account Created</td><td>Staff member</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td></tr>
+          <tr><td>Venue Activated by Admin</td><td>Venue Owner</td><td class="yes">✓</td><td class="no">✗</td><td class="yes">✓</td></tr>
+          <tr><td>OTP for Login</td><td>Customer</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Notification Templates</h3>
+
+    <div class="notif-template">
+      <div class="notif-title">📅 Booking Confirmed</div>
+      <div class="notif-body">
+        <strong>Title:</strong> "Booking Confirmed — DBH-20240315-0042"<br>
+        <strong>Body:</strong> "Your court at [Venue Name] is booked for [Date] · [Start Time]–[End Time]. See you there!"
+      </div>
+      <div class="notif-channels">
+        <span class="role role-owner">Push</span>
+        <span class="role role-staff">SMS</span>
+        <span class="role role-admin">Email</span>
+      </div>
+    </div>
+
+    <div class="notif-template">
+      <div class="notif-title">⏰ Reminder — 1 Hour Before</div>
+      <div class="notif-body">
+        <strong>Title:</strong> "Your game starts in 1 hour!"<br>
+        <strong>Body:</strong> "[Court Name] at [Venue Name] · [Start Time]. Don't be late 🏏"
+      </div>
+      <div class="notif-channels">
+        <span class="role role-owner">Push</span>
+        <span class="role role-staff">SMS</span>
+      </div>
+    </div>
+
+    <div class="notif-template">
+      <div class="notif-title">❌ Booking Cancelled</div>
+      <div class="notif-body">
+        <strong>Title:</strong> "Booking Cancelled"<br>
+        <strong>Body:</strong> "Your booking [Ref] at [Venue Name] on [Date] has been cancelled. [Reason if available]"
+      </div>
+      <div class="notif-channels">
+        <span class="role role-owner">Push</span>
+        <span class="role role-staff">SMS</span>
+        <span class="role role-admin">Email</span>
+      </div>
+    </div>
+
+    <div class="notif-template">
+      <div class="notif-title">🏟️ New Booking at Your Venue (Owner)</div>
+      <div class="notif-body">
+        <strong>Title:</strong> "New Booking — [Court Name]"<br>
+        <strong>Body:</strong> "[Customer Name] booked [Start]–[End] on [Date] · Ref: [Booking Ref]"
+      </div>
+      <div class="notif-channels">
+        <span class="role role-owner">Push</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. CHECKLIST -->
+  <section class="section" id="checklist">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Milestone 1 — Delivery Checklist</h2>
+    </div>
+
+    <h3>Backend (Node.js + PostgreSQL)</h3>
+    <ul class="checklist">
+      <li>Project scaffold: Express.js, folder structure (routes/controllers/services/models)</li>
+      <li>PostgreSQL setup + Knex.js or Prisma ORM configured</li>
+      <li>PostGIS extension enabled for geo queries</li>
+      <li>Database migrations for all 8 core tables</li>
+      <li>JWT auth middleware with role-based guards</li>
+      <li>Auth module: login, OTP send/verify, refresh, logout</li>
+      <li>Sports Categories CRUD API</li>
+      <li>Venues CRUD API + geo nearby endpoint</li>
+      <li>Courts CRUD API</li>
+      <li>Time Slots: generate, list available (by date), toggle</li>
+      <li>Bookings: create (multi-slot), manual, cancel, list</li>
+      <li>Users: owner create, staff create, profile update</li>
+      <li>Admin stats endpoints</li>
+      <li>Image upload to S3/Cloudinary</li>
+      <li>Notification service: FCM push + MSG91 SMS + SendGrid email</li>
+      <li>Booking reminders cron job (1hr before + 24hr before)</li>
+      <li>Input validation (Joi or Zod)</li>
+      <li>Error handling middleware</li>
+      <li>API rate limiting</li>
+      <li>Unit tests for booking creation + slot conflict logic</li>
+    </ul>
+
+    <h3>Master Admin Panel (React.js)</h3>
+    <ul class="checklist">
+      <li>Project setup: React + Vite + Ant Design or Shadcn/ui</li>
+      <li>Login page with JWT auth</li>
+      <li>Protected route wrappers</li>
+      <li>Dashboard: stat cards + bookings chart</li>
+      <li>Sports Categories: list + create/edit/delete modal</li>
+      <li>Venues: list table + create/edit form with map picker</li>
+      <li>Venue detail: courts sub-table + add/edit court</li>
+      <li>Venue Owners: list + create form</li>
+      <li>Venue Staff: list + create form</li>
+      <li>Bookings: global list with filters</li>
+      <li>Venue status toggle (activate/deactivate)</li>
+      <li>Responsive layout</li>
+    </ul>
+
+    <h3>Mobile App (React Native)</h3>
+    <ul class="checklist">
+      <li>Expo project setup with React Navigation</li>
+      <li>Role-aware navigation: Owner/Staff flow vs Customer flow</li>
+      <li>Phone OTP login + Email login screens</li>
+      <li>Customer: Home with map (Google Maps) + list of nearby venues</li>
+      <li>Customer: Venue detail page</li>
+      <li>Customer: Slot selection + multi-slot booking flow</li>
+      <li>Customer: My Bookings (tabs: upcoming/past/cancelled)</li>
+      <li>Customer: Cancel booking screen</li>
+      <li>Customer: Profile page</li>
+      <li>Owner/Staff: Dashboard</li>
+      <li>Owner/Staff: Court slot grid view (day view)</li>
+      <li>Owner/Staff: Manual booking creation</li>
+      <li>Owner/Staff: Booking list + detail + cancel</li>
+      <li>FCM push notification setup (Android + iOS)</li>
+      <li>Deep link handling for booking confirmation</li>
+    </ul>
+
+    <h3>Testing</h3>
+    <ul class="checklist">
+      <li>Unit tests: booking slot conflict, cancellation window logic</li>
+      <li>Integration tests: full booking creation flow via API</li>
+      <li>Manual QA: multi-slot booking, manual booking, cancellation</li>
+      <li>Geo query performance test with 100+ venues</li>
+      <li>Load test: concurrent booking requests for same slot</li>
+    </ul>
+
+    <h3>Deployment</h3>
+    <ul class="checklist">
+      <li>Backend deployed to AWS EC2 / Railway / Render</li>
+      <li>PostgreSQL on AWS RDS (or Supabase)</li>
+      <li>Admin panel deployed to Vercel or S3+CloudFront</li>
+      <li>Mobile app builds via EAS Build (Expo)</li>
+      <li>Environment variables secured (.env + secrets manager)</li>
+      <li>SSL certificate configured</li>
+      <li>Basic monitoring: UptimeRobot + Sentry for error tracking</li>
+    </ul>
+  </section>
+
+  <!-- 11. ROADMAP -->
+  <section class="section" id="roadmap">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2>Future Milestones Roadmap</h2>
+    </div>
+
+    <div class="milestone m1">
+      <div class="milestone-label">Milestone 1 · Current</div>
+      <h3>Core Platform</h3>
+      <p>Admin panel, venue/court management, slot booking, multi-slot support, role-based mobile app, notifications.</p>
+    </div>
+
+    <div class="milestone m2">
+      <div class="milestone-label">Milestone 2 · Q2</div>
+      <h3>Payments & Reviews</h3>
+      <ul>
+        <li>Razorpay integration — online payment at booking (UPI, card, netbanking)</li>
+        <li>Partial payment / pay-at-venue toggle per venue</li>
+        <li>Refund processing on cancellation</li>
+        <li>Customer reviews and star ratings for venues/courts</li>
+        <li>Venue response to reviews</li>
+        <li>Booking receipt PDF generation</li>
+      </ul>
+    </div>
+
+    <div class="milestone m3">
+      <div class="milestone-label">Milestone 3 · Q3</div>
+      <h3>Analytics & Growth</h3>
+      <ul>
+        <li>Venue Owner analytics dashboard: revenue trends, peak hours, court utilization heatmap</li>
+        <li>Platform analytics for Super Admin</li>
+        <li>Loyalty / reward points system for customers</li>
+        <li>Referral program</li>
+        <li>Promo codes and discounts</li>
+        <li>Multi-language support (Hindi, Gujarati)</li>
+      </ul>
+    </div>
+
+    <div class="milestone m4">
+      <div class="milestone-label">Milestone 4 · Q4</div>
+      <h3>Advanced Features</h3>
+      <ul>
+        <li>Recurring bookings (weekly/daily repeat)</li>
+        <li>Tournament management module</li>
+        <li>Player profiles with match history</li>
+        <li>Team booking (group reservations)</li>
+        <li>Waitlist for fully booked slots</li>
+        <li>External calendar sync (Google Calendar / iCal)</li>
+        <li>Venue partner app (tablet kiosk mode)</li>
+        <li>B2B corporate booking plans</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+  // Active nav highlighting on scroll
+  const sections = document.querySelectorAll('.section');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const active = document.querySelector(`.nav-item[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.2 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Smooth scroll
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(item.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+
+</body>
+</html>
