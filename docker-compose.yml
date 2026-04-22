@@ -1,10 +1,10 @@
 # LiveKit on alternate ports so it can run alongside another LiveKit (or anything) on 7880/7881.
-# Set LIVEKIT_URL in .env to ws://localhost:${LIVEKIT_WS_PORT:-17880}
+# Set LIVEKIT_URL in .env to ws://localhost:${LIVEKIT_WS_PORT:-7880}
 services:
   livekit:
     image: livekit/livekit-server:latest
     ports:
-      - "${LIVEKIT_WS_PORT:-17880}:${LIVEKIT_WS_PORT:-17880}"
+      - "${LIVEKIT_WS_PORT:-7880}:${LIVEKIT_WS_PORT:-7880}"
       - "${LIVEKIT_RTC_TCP_PORT:-17881}:${LIVEKIT_RTC_TCP_PORT:-17881}"
       - "${LIVEKIT_UDP_START:-60000}-${LIVEKIT_UDP_END:-60200}:${LIVEKIT_UDP_START:-60000}-${LIVEKIT_UDP_END:-60200}/udp"
     restart: unless-stopped
@@ -13,7 +13,7 @@ services:
       NODE_IP: ${LIVEKIT_ADVERTISE_IP:-127.0.0.1}
       LIVEKIT_KEYS: "${LIVEKIT_API_KEY:-devkey}: ${LIVEKIT_API_SECRET:?LIVEKIT_API_SECRET must be set in .env (min 32 chars) and must match the token server}"
       LIVEKIT_CONFIG: |
-        port: ${LIVEKIT_WS_PORT:-17880}
+        port: ${LIVEKIT_WS_PORT:-7880}
         rtc:
           tcp_port: ${LIVEKIT_RTC_TCP_PORT:-17881}
           port_range_start: ${LIVEKIT_UDP_START:-60000}
