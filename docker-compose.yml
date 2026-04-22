@@ -11,7 +11,7 @@ services:
     environment:
       LIVEKIT_BIND_ADDRESSES: 0.0.0.0
       NODE_IP: ${LIVEKIT_ADVERTISE_IP:-127.0.0.1}
-      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:-devkey}: ${LIVEKIT_API_SECRET}"
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:-devkey}: ${LIVEKIT_API_SECRET:?LIVEKIT_API_SECRET must be set in .env (min 32 chars) and must match the token server}"
       LIVEKIT_CONFIG: |
         port: ${LIVEKIT_WS_PORT:-17880}
         rtc:

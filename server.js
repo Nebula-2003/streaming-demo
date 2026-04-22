@@ -49,7 +49,7 @@ app.post('/api/token/host', async (req, res) => {
             identity: participantName,
             name: participantName,
         });
-
+        console.log(`Generating host token for ${participantName} in room ${roomName} and  ${token}`);
         token.addGrant({
             roomJoin: true,
             room: roomName,
@@ -59,6 +59,7 @@ app.post('/api/token/host', async (req, res) => {
         });
 
         const jwt = await token.toJwt();
+        console.log(`Generated host token: ${jwt}`);
 
         res.json({
             token: jwt,
