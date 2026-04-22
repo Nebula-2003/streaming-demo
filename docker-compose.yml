@@ -1,26 +1,31 @@
-# LiveKit on alternate ports so it can run alongside another LiveKit (or anything) on 7880/7881.
-# Set LIVEKIT_URL in .env to ws://localhost:${LIVEKIT_WS_PORT:-7880}
 services:
   livekit:
     image: livekit/livekit-server:latest
-    ports:
-      - "${LIVEKIT_WS_PORT:-17880}:${LIVEKIT_WS_PORT:-17880}"
-      - "${LIVEKIT_RTC_TCP_PORT:-17881}:${LIVEKIT_RTC_TCP_PORT:-17881}"
-      - "${LIVEKIT_UDP_START:-60000}-${LIVEKIT_UDP_END:-60200}:${LIVEKIT_UDP_START:-60000}-${LIVEKIT_UDP_END:-60200}/udp"
+    # Host networking: LiveKit binds directly on the host interface.
+    # No docker port-mapping → no iptables rules → avoids "port already in use"
+    # conflicts from other processes scattering UDP sockets.
+    network_mode: host
     restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    logging:
+      driver: json-file
+      options: { max-size: "50m", max-file: "5" }
     environment:
-      LIVEKIT_BIND_ADDRESSES: 0.0.0.0
       NODE_IP: ${LIVEKIT_ADVERTISE_IP:-127.0.0.1}
-      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:-devkey}: ${LIVEKIT_API_SECRET:?LIVEKIT_API_SECRET must be set in .env (min 32 chars) and must match the token server}"
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:-devkey}: ${LIVEKIT_API_SECRET:?set LIVEKIT_API_SECRET in .env}"
       LIVEKIT_CONFIG: |
         port: ${LIVEKIT_WS_PORT:-17880}
+        bind_addresses: [0.0.0.0]
         rtc:
           tcp_port: ${LIVEKIT_RTC_TCP_PORT:-17881}
-          port_range_start: ${LIVEKIT_UDP_START:-60000}
-          port_range_end: ${LIVEKIT_UDP_END:-60200}
-    networks:
-      - livekit-network
-
-networks:
-  livekit-network:
-    driver: bridge
+          port_range_start: ${LIVEKIT_UDP_START:-40000}
+          port_range_end: ${LIVEKIT_UDP_END:-41000}
+          use_external_ip: true
+        turn:
+          enabled: false
+        room:
+          empty_timeout: 300
+          max_participants: 500
