@@ -3,7 +3,8 @@ const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const { AccessToken } = require('livekit-server-sdk');
-require('dotenv').config();
+// Use .env over pre-set shell vars so LIVEKIT_API_SECRET matches docker-compose --keys
+require('dotenv').config({ override: true });
 const path = require('path');
 
 const app = express();
@@ -12,10 +13,11 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
-const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || 'devkey';
-const LIVEKIT_API_SECRET =
-    process.env.LIVEKIT_API_SECRET || 'f6d5c4b3a2918e7d6c5b4a39281706f5';
-const LIVEKIT_URL = process.env.LIVEKIT_URL || 'ws://localhost:7880';
+const LIVEKIT_API_KEY = (process.env.LIVEKIT_API_KEY || 'devkey').trim();
+const LIVEKIT_API_SECRET = (
+    process.env.LIVEKIT_API_SECRET || 'f6d5c4b3a2918e7d6c5b4a39281706f5'
+).trim();
+const LIVEKIT_URL = process.env.LIVEKIT_URL || 'ws://localhost:17880';
 
 
 // Health check endpoint
@@ -134,6 +136,9 @@ app.listen(PORT, () => {
     console.log(`🚀 HTTP Server: http://${serverHost}:${PORT}`);
     console.log(`🔗 LiveKit URL: ${LIVEKIT_URL}`);
     console.log(`🔑 API Key: ${LIVEKIT_API_KEY}`);
+    console.log(
+        `🔐 API secret length: ${LIVEKIT_API_SECRET.length} (must match LiveKit server --keys)`
+    );
     console.log('');
     console.log('Host Endpoint:');
     console.log(`  - http://${serverHost}:${PORT}/host`);
