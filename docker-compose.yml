@@ -28,4 +28,4 @@ services:
           enabled: false
         room:
           empty_timeout: 300
-          max_participants: 500
+          max_participants: 1000
