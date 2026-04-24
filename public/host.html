@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveKit Host - Start Broadcasting</title>
-    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.10/dist/livekit-client.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -295,6 +295,18 @@
                 room = new LivekitClient.Room({
                     adaptiveStream: true,
                     dynacast: true,
+                    publishDefaults: {
+                        videoCodec: 'vp9',
+                        simulcast: true,
+                        videoEncoding: {
+                            maxBitrate: 2_500_000,
+                            maxFramerate: 30,
+                        },
+                        backupCodec: {
+                            codec: 'vp8',
+                            encoding: { maxBitrate: 1_500_000, maxFramerate: 30 },
+                        },
+                    },
                 });
 
                 // Set up event listeners
@@ -334,8 +346,10 @@
                 // Connect to room
                 await room.connect(data.livekitUrl, data.token);
 
-                // Enable camera and microphone
-                await room.localParticipant.setCameraEnabled(true);
+                // Enable camera and microphone with capped resolution (720p)
+                await room.localParticipant.setCameraEnabled(true, {
+                    resolution: LivekitClient.VideoPresets.h720.resolution,
+                });
                 await room.localParticipant.setMicrophoneEnabled(true);
 
                 // Video will be attached via LocalTrackPublished event
