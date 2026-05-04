@@ -256,12 +256,37 @@
     <script>
         const API_URL = window.location.origin;
         let room = null;
-        let localTracks = [];
 
         function showStatus(message, type = 'info') {
             const statusEl = document.getElementById('status');
             statusEl.textContent = message;
             statusEl.className = type;
+        }
+
+        async function logActiveVideoCodec(track) {
+            const sender = track?.sender;
+            if (!sender?.getStats) {
+                console.log('Active video codec: sender stats unavailable');
+                return;
+            }
+
+            try {
+                const stats = await sender.getStats();
+                let codecMimeType = null;
+
+                stats.forEach((report) => {
+                    if (report.type === 'outbound-rtp' && report.kind === 'video' && report.codecId) {
+                        const codecReport = stats.get(report.codecId);
+                        if (codecReport?.mimeType) {
+                            codecMimeType = codecReport.mimeType;
+                        }
+                    }
+                });
+
+                console.log('Active outbound video codec:', codecMimeType || 'unknown');
+            } catch (error) {
+                console.warn('Failed to read sender stats for codec detection:', error);
+            }
         }
 
         async function startBroadcast() {
@@ -293,19 +318,16 @@
 
                 // Create room instance
                 room = new LivekitClient.Room({
-                    adaptiveStream: true,
-                    dynacast: true,
+                    adaptiveStream: false,
+                    dynacast: false,
                     publishDefaults: {
-                        videoCodec: 'vp9',
-                        simulcast: true,
+                        videoCodec: 'h264',
+                        simulcast: false,
                         videoEncoding: {
                             maxBitrate: 2_500_000,
                             maxFramerate: 30,
                         },
-                        backupCodec: {
-                            codec: 'vp8',
-                            encoding: { maxBitrate: 1_500_000, maxFramerate: 30 },
-                        },
+                        backupCodec: false
                     },
                 });
 
@@ -315,13 +337,17 @@
                     document.getElementById('connectionStatus').textContent = 'Connected';
                 });
 
+                room.on(LivekitClient.RoomEvent.Reconnected, () => {
+                    showStatus('Reconnected to room', 'success');
+                });
+
                 room.on(LivekitClient.RoomEvent.ParticipantConnected, (participant) => {
                     console.log('Viewer joined:', participant.identity);
-                    updateViewerCount(true);
+                    updateViewerCount();
                 });
 
                 room.on(LivekitClient.RoomEvent.ParticipantDisconnected, () => {
-                    updateViewerCount(false);
+                    updateViewerCount();
                 });
 
                 room.on(LivekitClient.RoomEvent.Disconnected, () => {
@@ -333,6 +359,11 @@
                     console.log('Track published:', publication.kind);
                     if (publication.kind === 'video') {
                         document.getElementById('videoStatus').textContent = 'Yes';
+
+                        setTimeout(() => {
+                            logActiveVideoCodec(publication.track);
+                        }, 1500);
+
                         // Attach video when it's published
                         if (publication.track) {
                             const videoElement = document.getElementById('localVideo');
@@ -364,6 +395,7 @@
 
                 const viewerUrl = `${window.location.origin}/viewer?room=${encodeURIComponent(roomName)}`;
                 document.getElementById('shareLink').textContent = viewerUrl;
+                updateViewerCount();
 
                 showStatus('Broadcasting live! 🔴', 'success');
 
@@ -395,24 +427,14 @@
             document.getElementById('connectionStatus').textContent = 'Connecting...';
         }
 
-  function updateViewerCount(isConnected = true) {
-    if (!room) return;
- 
-    const roomKey = `viewerCount`;
+        function updateViewerCount() {
+            if (!room) {
+                document.getElementById('viewerCount').textContent = '0';
+                return;
+            }
 
-    let viewerCount = parseInt(localStorage.getItem(roomKey) || '0', 10);
- 
-    if (isConnected) {
-        viewerCount += 1;
-    } else {
-        viewerCount = Math.max(0, viewerCount - 1);
-    }
-
-    localStorage.setItem(roomKey, viewerCount);
- 
-
-    document.getElementById('viewerCount').textContent = viewerCount;
-}
+            document.getElementById('viewerCount').textContent = room.remoteParticipants.size;
+        }
 
  
         // Clean up on page unload

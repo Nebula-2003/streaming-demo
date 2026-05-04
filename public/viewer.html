@@ -368,8 +368,7 @@
                         document.getElementById('videoContainer').style.display = 'block';
                         document.getElementById('noStream').classList.remove('show');
                         showStatus('Watching live stream 🎥', 'success');
-                        // Update host name
-                        document.getElementById('hostName').textContent = participant.identity;
+                        updateHostName();
                     } else if (track.kind === 'audio') {
                         // Attach audio to the same video element
                         const videoElement = document.getElementById('remoteVideo');
@@ -389,11 +388,13 @@
                 room.on(LivekitClient.RoomEvent.ParticipantConnected, (participant) => {
                     console.log('Participant joined:', participant.identity);
                     updateViewerCount();
+                    updateHostName();
                 });
 
                 room.on(LivekitClient.RoomEvent.ParticipantDisconnected, (participant) => {
                     console.log('Participant left:', participant.identity);
                     updateViewerCount();
+                    updateHostName();
                 });
 
                 room.on(LivekitClient.RoomEvent.Disconnected, () => {
@@ -424,8 +425,7 @@
                                     hasVideo = true;
                                 }
                             });
-                            // Set host name
-                            document.getElementById('hostName').textContent = participant.identity;
+                            updateHostName();
                         }
 
                         // Attach existing audio tracks
@@ -446,6 +446,7 @@
                 }
 
                 updateViewerCount();
+                updateHostName();
 
             } catch (error) {
                 console.error('Error joining stream:', error);
@@ -473,23 +474,43 @@
         }
 
         function updateViewerCount() {
-            if (room && room.participants) {
-                // Count all participants (including host)
-                const totalCount = room.participants.size + 1; // +1 for local participant
-                document.getElementById('viewerCount').textContent = totalCount;
+            if (!room) {
+                document.getElementById('viewerCount').textContent = '0';
+                return;
             }
-        }
 
-        function findHost() {
-            if (room && room.participants && room.participants.values) {
-                // Find the participant who is publishing video (the host)
-                for (const participant of room.participants.values()) {
-                    if (participant.videoTracks && participant.videoTracks.size > 0) {
-                        document.getElementById('hostName').textContent = participant.identity;
-                        break; // Found the host, no need to continue
-                    }
+            let viewers = 1;
+            for (const participant of room.remoteParticipants.values()) {
+                if (!isHostParticipant(participant)) {
+                    viewers += 1;
                 }
             }
+
+            document.getElementById('viewerCount').textContent = viewers;
+        }
+
+        function updateHostName() {
+            if (!room) {
+                document.getElementById('hostName').textContent = '-';
+                return;
+            }
+
+            for (const participant of room.remoteParticipants.values()) {
+                if (isHostParticipant(participant)) {
+                    document.getElementById('hostName').textContent = participant.identity;
+                    return;
+                }
+            }
+
+            document.getElementById('hostName').textContent = '-';
+        }
+
+        function isHostParticipant(participant) {
+            if (!participant) {
+                return false;
+            }
+
+            return participant.videoTracks.size > 0 || participant.audioTracks.size > 0;
         }
 
         // Clean up on page unload
