@@ -315,7 +315,7 @@
 
                 const data = await response.json();
                 showStatus('Connecting to LiveKit...', 'info');
-
+                console.log('Received token and URL from backend:', data);
                 // Create room instance
                 room = new LivekitClient.Room({
                     adaptiveStream: false,

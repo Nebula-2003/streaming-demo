@@ -411,13 +411,13 @@
 
                 // Check if there are already video tracks available
                 let hasVideo = false;
-                if (room.participants && room.participants.size > 0) {
-                    room.participants.forEach((participant) => {
+                if (room.remoteParticipants && room.remoteParticipants.size > 0) {
+                    room.remoteParticipants.forEach((participant) => {
                         const videoElement = document.getElementById('remoteVideo');
 
                         // Attach existing video tracks
-                        if (participant.videoTracks && participant.videoTracks.size > 0) {
-                            participant.videoTracks.forEach((publication) => {
+                        if (participant.videoTrackPublications && participant.videoTrackPublications.size > 0) {
+                            participant.videoTrackPublications.forEach((publication) => {
                                 if (publication.track) {
                                     publication.track.attach(videoElement);
                                     document.getElementById('videoContainer').style.display = 'block';
@@ -429,8 +429,8 @@
                         }
 
                         // Attach existing audio tracks
-                        if (participant.audioTracks && participant.audioTracks.size > 0) {
-                            participant.audioTracks.forEach((publication) => {
+                        if (participant.audioTrackPublications && participant.audioTrackPublications.size > 0) {
+                            participant.audioTrackPublications.forEach((publication) => {
                                 if (publication.track) {
                                     publication.track.attach(videoElement);
                                     console.log('Existing audio track attached from', participant.identity);
@@ -510,7 +510,7 @@
                 return false;
             }
 
-            return participant.videoTracks.size > 0 || participant.audioTracks.size > 0;
+            return participant.videoTrackPublications.size > 0 || participant.audioTrackPublications.size > 0;
         }
 
         // Clean up on page unload

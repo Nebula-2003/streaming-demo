@@ -23,7 +23,7 @@ services:
           tcp_port: ${LIVEKIT_RTC_TCP_PORT:-17881}
           port_range_start: ${LIVEKIT_UDP_START:-40000}
           port_range_end: ${LIVEKIT_UDP_END:-41000}
-          use_external_ip: true
+          use_external_ip: false
         turn:
           enabled: false
         room:
